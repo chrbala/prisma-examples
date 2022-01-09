@@ -1,101 +1,45 @@
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-// A `main` function so that we can use async/await
-async function main() {
-  // Seed the database with users and posts
-  const user1 = await prisma.user.create({
-    data: {
-      email: 'alice@prisma.io',
-      name: 'Alice',
-      posts: {
-        create: {
-          title: 'Watch the talks from Prisma Day 2019',
-          content: 'https://www.prisma.io/blog/z11sg6ipb3i1/',
-          published: true,
-        },
-      },
-    },
+(async () => {
+  /**
+   * This returns only one result even though the following query returns two:
+   * SELECT * FROM Item INNER JOIN OtherItem ON Item.otherItemId = OtherItem.id
+   */
+  const items = await prisma.item.findMany({
     include: {
-      posts: true,
-    },
-  })
-  const user2 = await prisma.user.create({
-    data: {
-      email: 'bob@prisma.io',
-      name: 'Bob',
-      posts: {
-        create: [
-          {
-            title: 'Subscribe to GraphQL Weekly for community news',
-            content: 'https://graphqlweekly.com/',
-            published: true,
-          },
-          {
-            title: 'Follow Prisma on Twitter',
-            content: 'https://twitter.com/prisma/',
-            published: false,
-          },
-        ],
-      },
-    },
+      otherItem: true
+    }
+  });
+
+  /**
+   * This causes a panic:
+   * thread 'tokio-runtime-worker' panicked at 'Expected parent IDs to be set when ordering by parent ID.', query-engine/core/src/interpreter/query_interpreters/inmemory_record_processor.rs:71:18
+      note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+      /Users/chris/prisma-examples/typescript/script/node_modules/@prisma/client/runtime/index.js:38692
+                throw new PrismaClientUnknownRequestError(message, this.prisma._clientVersion);
+                      ^
+      PrismaClientUnknownRequestError: 
+      Invalid `prisma.otherItem.findMany()` invocation in
+      /Users/chris/prisma-examples/typescript/script/script.ts:12:45
+
+        9   }
+        10 });
+        11 
+      → 12 const otherItems = await prisma.otherItem.findMany(
+        Expected parent IDs to be set when ordering by parent ID.
+          at cb (/Users/chris/prisma-examples/typescript/script/node_modules/@prisma/client/runtime/index.js:38692:17) {
+        clientVersion: '3.7.0'
+   */
+
+  /*
+  const otherItems = await prisma.otherItem.findMany({
     include: {
-      posts: true,
-    },
+      item: true
+    }
   })
-  console.log(
-    `Created users: ${user1.name} (${user1.posts.length} post) and ${user2.name} (${user2.posts.length} posts) `,
-  )
+  */
 
-  // Retrieve all published posts
-  const allPosts = await prisma.post.findMany({
-    where: { published: true },
-  })
-  console.log(`Retrieved all published posts: ${allPosts}`)
-
-  // Create a new post (written by an already existing user with email alice@prisma.io)
-  const newPost = await prisma.post.create({
-    data: {
-      title: 'Join the Prisma Slack community',
-      content: 'http://slack.prisma.io',
-      published: false,
-      author: {
-        connect: {
-          email: 'alice@prisma.io',
-        },
-      },
-    },
-  })
-  console.log(`Created a new post: ${newPost}`)
-
-  // Publish the new post
-  const updatedPost = await prisma.post.update({
-    where: {
-      id: newPost.id,
-    },
-    data: {
-      published: true,
-    },
-  })
-  console.log(`Published the newly created post: ${updatedPost}`)
-
-  // Retrieve all posts by user with email alice@prisma.io
-  const postsByUser = await prisma.user
-    .findUnique({
-      where: {
-        email: 'alice@prisma.io',
-      },
-    })
-    .posts()
-  console.log(`Retrieved all posts from a specific user: ${postsByUser}`)
-}
-
-main()
-  .catch((e) => {
-    console.error(e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+  console.log({items});
+})();
