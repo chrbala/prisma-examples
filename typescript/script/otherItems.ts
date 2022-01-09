@@ -4,16 +4,6 @@ const prisma = new PrismaClient();
 
 (async () => {
   /**
-   * This returns only one result even though the following query returns two:
-   * SELECT * FROM Item INNER JOIN OtherItem ON Item.otherItemId = OtherItem.id
-   */
-  const items = await prisma.item.findMany({
-    include: {
-      otherItem: true
-    }
-  });
-
-  /**
    * This causes a panic:
    * thread 'tokio-runtime-worker' panicked at 'Expected parent IDs to be set when ordering by parent ID.', query-engine/core/src/interpreter/query_interpreters/inmemory_record_processor.rs:71:18
       note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
@@ -33,13 +23,11 @@ const prisma = new PrismaClient();
         clientVersion: '3.7.0'
    */
 
-  /*
   const otherItems = await prisma.otherItem.findMany({
     include: {
       item: true
     }
   })
-  */
 
-  console.log({items});
+  console.log({otherItems});
 })();

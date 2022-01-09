@@ -2,7 +2,8 @@
   "name": "script",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node ./script.ts",
+    "items": "ts-node ./items.ts",
+    "otherItems": "ts-node ./otherItems.ts",
     "prisma": "prisma"
   },
   "dependencies": {

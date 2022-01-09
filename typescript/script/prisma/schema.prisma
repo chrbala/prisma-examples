@@ -17,6 +17,7 @@ model Item {
 
 model OtherItem {
   id String @id
+  value Float
 
   item Item[] 
 }

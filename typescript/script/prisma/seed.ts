@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 (async () => {
     await prisma.otherItem.createMany({
         data: [
-            {id: 'ID'}
+            {id: 'ID', value: Math.random()}
         ]
     })
     await prisma.item.createMany({
