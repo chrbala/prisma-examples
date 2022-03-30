@@ -2,28 +2,55 @@ import { PrismaClient, Prisma } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-const userData: Prisma.UserCreateInput[] = [
+const input: Prisma.OneCreateInput[] = [
   {
-    name: 'Alice',
-    email: 'alice@prisma.io',
-  },
-  {
-    name: 'Nilu',
-    email: 'nilu@prisma.io',
-  },
-  {
-    name: 'Mahmoud',
-    email: 'mahmoud@prisma.io',
+    next: {
+      create: {
+        next: {
+          create: {
+            next: {
+              create: {
+                next: {
+                  create: {
+                    next: {
+                      create: {
+                        next: {
+                          create: {
+                            next: {
+                              create: {
+                                next: {
+                                  create: {
+                                    next: {
+                                      create: {
+                                        value: 'Hello world!'
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   },
 ]
 
 async function main() {
   console.log(`Start seeding ...`)
-  for (const u of userData) {
-    const user = await prisma.user.create({
-      data: u,
+  for (const data of input) {
+    const item = await prisma.one.create({
+      data,
     })
-    console.log(`Created user with id: ${user.id}`)
+    console.log(`Created item with id: ${item.id}`)
   }
   console.log(`Seeding finished.`)
 }

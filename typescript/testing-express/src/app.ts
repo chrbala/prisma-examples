@@ -6,24 +6,55 @@ export const app = express()
 
 app.use(express.json())
 
-app.get(`/user`, async (_req, res) => {
-  const result = await prisma.user.findMany()
-  res.json(result)
-})
+const shallow = () => prisma.one.findFirst()
 
-app.post(`/user`, async (req, res) => {
-  const { name, email } = req.body
-  try {
-    const result = await prisma.user.create({
-      data: {
-        name,
-        email,
+const deep = () =>
+  prisma.one.findFirst({
+    include: {
+      next: {
+        include: {
+          next: {
+            include: {
+              next: {
+                include: {
+                  next: {
+                    include: {
+                      next: {
+                        include: {
+                          next: {
+                            include: {
+                              next: {
+                                include: {
+                                  next: {
+                                    include: {
+                                      next: true,
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
-    })
-    res.json(result)
-  } catch (e) {
-    res.status(409).json({
-      error: 'User already exists!',
-    })
-  }
+    },
+  })
+
+app.get(`/test`, async (_req, res) => {
+  const startShallow = Date.now()
+  const shallowRes = await shallow()
+  console.log('shallow', Date.now() - startShallow)
+
+  const startDeep = Date.now()
+  const deepRes = await deep()
+  console.log('deep', Date.now() - startDeep)
+
+  res.send({ shallowRes, deepRes })
 })

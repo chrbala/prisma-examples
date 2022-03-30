@@ -4,7 +4,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "ts-node src/index.ts",
-    "test": "jest"
+    "test": "jest",
+    "prisma": "node -r dotenv/config node_modules/.bin/prisma",
+    "start": "ts-node ./src/index.ts"
   },
   "prettier": {
     "semi": false,
@@ -13,6 +15,7 @@
   "dependencies": {
     "@prisma/client": "3.7.0",
     "@types/node": "16.11.19",
+    "dotenv": "^16.0.0",
     "express": "4.17.2"
   },
   "devDependencies": {

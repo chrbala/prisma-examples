@@ -1,14 +1,70 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
-  provider = "sqlite"
-  url      = env("DB_URL")
+  provider             = "mysql"
+  url                  = env("DB_URL")
+  referentialIntegrity = "prisma"
 }
 
-model User {
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+model One {
   id    Int     @default(autoincrement()) @id
-  name  String?
-  email String  @unique
+  next Two[]
+}
+
+model Two {
+  id    Int     @default(autoincrement()) @id
+  previous One @relation(fields: [id], references: [id])
+  next Three[]
+}
+
+model Three {
+  id    Int     @default(autoincrement()) @id
+  previous Two @relation(fields: [id], references: [id])
+  next Four[]
+}
+
+model Four {
+  id    Int     @default(autoincrement()) @id
+  previous Three @relation(fields: [id], references: [id])
+  next Five[]
+}
+
+model Five {
+  id    Int     @default(autoincrement()) @id
+  previous Four @relation(fields: [id], references: [id])
+  next Six[]
+}
+
+model Six {
+  id    Int     @default(autoincrement()) @id
+  previous Five @relation(fields: [id], references: [id])
+  next Seven[]
+}
+
+
+model Seven {
+  id    Int     @default(autoincrement()) @id
+  previous Six @relation(fields: [id], references: [id])
+  next Eight[]
+}
+
+model Eight {
+  id    Int     @default(autoincrement()) @id
+  previous Seven @relation(fields: [id], references: [id])
+  next Nine[]
+}
+
+model Nine {
+  id    Int     @default(autoincrement()) @id
+  previous Eight @relation(fields: [id], references: [id])
+  next Ten[]
+}
+
+model Ten {
+  id    Int     @default(autoincrement()) @id
+  previous Nine @relation(fields: [id], references: [id])
+  value String
 }
